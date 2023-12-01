@@ -5,7 +5,7 @@ from pathlib import Path
 import requests
 from lxml import html
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(format="%(message)s", level=logging.INFO)
 
 
 def read_config():
@@ -14,15 +14,21 @@ def read_config():
 
 
 class Day:
-    def __init__(self, num, result1=None, result2=None, test2_data=True):
-        self.test1 = result1
-        self.test2 = result2
+    def __init__(self, num, *, test_results, input_results=None, get_test2_data=True):
+        self.test_results = test_results
+        self.input_results = input_results
+
+        self.get_test2_data = get_test2_data
+
         self._num = num
         self._num_str = str(num).zfill(2)
+
         self._input_file = Path("days/inputs") / f"{self._num_str}_input.txt"
         self._test1_file = Path("days/inputs") / f"{self._num_str}_test_1.txt"
         self._test2_file = Path("days/inputs") / f"{self._num_str}_test_2.txt"
+
         self._config = read_config()
+
         self._get_input_file()
         self._get_test_files()
 
@@ -50,13 +56,15 @@ class Day:
         Scrap test data to test file if not already present.
         """
         if self._test1_file.exists() and (
-            self._test2_file.exists() or self.test2 is None or not self.test2_data
+            self._test2_file.exists()
+            or len(self.test_results) == 1
+            or not self.get_test2_data
         ):
             return
-        logging.info("Test file 1 not found, scraping...")
+        logging.info("Test file missing, scraping...")
         data = self._scrape_test_data()
         if len(data) == 0 or len(data) >= 3:  # noqa: PLR2004
-            logging.warn("Warning, test data cannot be downloaded")
+            logging.warn("⚠ Warning, test data cannot be downloaded ⚠")
         else:
             for i, text in enumerate(data):
                 logging.info(f"Scraped data for test{i+1}:\n{text}")
@@ -69,33 +77,37 @@ class Day:
             return f.read()
 
     @property
-    def test1_data(self):
+    def test_data(self):
+        res = []
         with open(self._test1_file) as f:
-            return f.read()
+            res.append(f.read())
+        if self._test2_file.exists():
+            with open(self._test2_file) as f:
+                res.append(f.read())
+        return res
 
     @property
     def test2_data(self):
         with open(self._test2_file) as f:
             return f.read()
 
-    def validate1(self, fn):
-        res_test = fn(self.test1_data)
-        logging.info("--- Results for first puzzle ---")
-        logging.info(f"Result on test data: {res_test}")
-        if res_test == self.test1:
+    def validate_puzzle(self, i, fn):
+        logging.info(f"\n🌞 Results for puzzle {i + 1} 🌞")
+        res_test = fn(self.test_data[i])
+        logging.info(f"🧪 Result on test data: {res_test}")
+        if res_test == self.test_results[i]:
             logging.info("✅ Test data result is ok")
         else:
             logging.error("⛔ Test data result is wrong")
         res_input = fn(self.input_data)
-        logging.info(f"Result on input data: {res_input}")
+        logging.info(f"🚀 Result on input data: {res_input}")
+        if self.input_results is not None and len(self.input_results) > i:
+            if res_input == self.input_results[i]:
+                logging.info("✅ Input data result is ok")
+            else:
+                logging.error("⛔ Input data result is wrong")
 
-    def validate2(self, fn):
-        res_test = fn(self.test2_data)
-        logging.info("--- Results for second puzzle ---")
-        logging.info(f"Result on test data: {res_test}")
-        if res_test == self.test2:
-            logging.info("✅ Test data result is ok")
-        else:
-            logging.error("⛔ Test data result is wrong")
-        res_input = fn(self.input_data)
-        logging.info(f"Result on input data: {res_input}")
+    def validate(self, fn1, fn2=None):
+        self.validate_puzzle(0, fn1)
+        if fn2 is not None:
+            self.validate_puzzle(1, fn2)

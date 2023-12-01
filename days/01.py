@@ -2,7 +2,7 @@ import re
 
 from advent_2023 import Day
 
-day = Day(1, result1=142, result2=281)
+day = Day(1, test_results=[142, 281], input_results=[54338, 53389])
 
 
 def puzzle1(input_data):
@@ -33,5 +33,4 @@ def puzzle2(input_data):
 
 
 if __name__ == "__main__":
-    day.validate1(puzzle1)
-    day.validate2(puzzle2)
+    day.validate(puzzle1, puzzle2)
