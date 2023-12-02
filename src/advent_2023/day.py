@@ -91,7 +91,7 @@ class Day:
         with open(self._test2_file) as f:
             return f.read()
 
-    def validate_puzzle(self, i, fn):
+    def validate_puzzle(self, i, fn, *, test_only=False):
         logging.info(f"\n🌞 Results for puzzle {i + 1} 🌞")
         res_test = fn(self.test_data[i])
         logging.info(f"🧪 Result on test data: {res_test}")
@@ -99,6 +99,8 @@ class Day:
             logging.info("✅ Test data result is ok")
         else:
             logging.error("⛔ Test data result is wrong")
+        if test_only:
+            return
         res_input = fn(self.input_data)
         logging.info(f"🚀 Result on input data: {res_input}")
         if self.input_results is not None and len(self.input_results) > i:
@@ -107,7 +109,7 @@ class Day:
             else:
                 logging.error("⛔ Input data result is wrong")
 
-    def validate(self, fn1, fn2=None):
-        self.validate_puzzle(0, fn1)
+    def validate(self, fn1, fn2=None, *, test_only=False):
+        self.validate_puzzle(0, fn1, test_only=test_only)
         if fn2 is not None:
-            self.validate_puzzle(1, fn2)
+            self.validate_puzzle(1, fn2, test_only=test_only)
