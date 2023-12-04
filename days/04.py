@@ -5,10 +5,9 @@ from advent_2023 import Day
 
 def get_wins(lines):
     lines = [line.split("|") for line in lines]
-    get_numbers = lambda x: re.findall(r"(\d+)(?: |$)", x)
+    get_numbers = lambda x: set(re.findall(r"(\d+)(?: |$)", x))
     return [
-        len(set(get_numbers(line[0])).intersection(set(get_numbers(line[1]))))
-        for line in lines
+        len(get_numbers(line[0]).intersection(get_numbers(line[1]))) for line in lines
     ]
 
 
