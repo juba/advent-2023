@@ -14,11 +14,20 @@ def read_config():
 
 
 class Day:
-    def __init__(self, num, *, test_results, input_results=None, get_test2_data=True):
+    def __init__(
+        self,
+        num,
+        *,
+        test_results,
+        input_results=None,
+        get_test2_data=True,
+        test_data_indices=[0, 0],
+    ):
         self.test_results = test_results
         self.input_results = input_results
 
         self.get_test2_data = get_test2_data
+        self.test_data_indices = test_data_indices
 
         self._num = num
         self._num_str = str(num).zfill(2)
@@ -63,10 +72,11 @@ class Day:
             return
         logging.info("Test file missing, scraping...")
         data = self._scrape_test_data()
-        if len(data) == 0 or len(data) >= 3:  # noqa: PLR2004
-            logging.warn("⚠ Warning, test data cannot be downloaded ⚠")
+        if len(data) == 0:
+            logging.warn("⚠ Warning, test data cannot be downloaded, no data found ⚠")
         else:
-            for i, text in enumerate(data):
+            for i, index in enumerate(self.test_data_indices):
+                text = data[index]
                 logging.info(f"Scraped data for test{i+1}:\n{text}")
                 with open(getattr(self, f"_test{i+1}_file"), "w") as f:
                     f.write(text)
