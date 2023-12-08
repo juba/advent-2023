@@ -37,5 +37,10 @@ def puzzle2(input_data):
 
 
 if __name__ == "__main__":
-    day = Day(8, test_results=[2, 6], input_results=[20777], test_data_indices=[0, 2])
+    day = Day(
+        8,
+        test_results=[2, 6],
+        input_results=[20777, 13289612809129],
+        test_data_indices=[0, 2],
+    )
     day.validate(puzzle1, puzzle2, test_only=False)
