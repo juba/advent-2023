@@ -6,10 +6,10 @@ from advent_2023 import Day
 
 def reduce_line(line, index):
     line = [int(v) for v in line.split(" ")][::-1]
-    res = [line[index]]
-    while line[0] != line[1] or line[1] != line[2]:
-        line = [i - j for i, j in itertools.pairwise(line)]
+    res = []
+    while any(line):
         res.append(line[index])
+        line = [i - j for i, j in itertools.pairwise(line)]
     return res
 
 
