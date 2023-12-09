@@ -20,8 +20,8 @@ def puzzle1(input_data):
 
 def puzzle2(input_data):
     lines = [reduce_line(line, -1)[::-1] for line in input_data.splitlines()]
-    lines = [functools.reduce(lambda acc, cur: cur - acc, line) for line in lines]
-    return sum(lines)
+    predict = [functools.reduce(lambda acc, cur: cur - acc, line) for line in lines]
+    return sum(predict)
 
 
 if __name__ == "__main__":
