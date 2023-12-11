@@ -65,44 +65,40 @@ def puzzle1(input_data):
     return dist
 
 
-def plot(input_data, loop, inside):
-    lines = input_data.splitlines()
-    for i, line in enumerate(lines):
-        for j, char in enumerate(line):
-            if j + i * 1j in inside:
-                print(".", end="")
-            elif j + i * 1j in loop:
-                print(char, end="")
-            else:
-                print("O", end="")
-        print()
+# def plot(input_data, loop, inside):
+#     lines = input_data.splitlines()
+#     for i, line in enumerate(lines):
+#         for j, char in enumerate(line):
+#             if j + i * 1j in inside:
+#                 print(".", end="")
+#             elif j + i * 1j in loop:
+#                 print(char, end="")
+#             else:
+#                 print("O", end="")
+#         print()
 
 
-def is_inside(tile, grid, loop):
-    maxh = max([int(l.real) for l in loop])
+# FIXME: this is really slow, and for it to be a real solution "S" must be
+# replaced by its real value (it worked with our input but wouldn't on another)
+
+
+def is_inside(tile, grid, vert):
     left = ("").join(
         [
             grid.get(i + tile.imag * 1j)
             for i in range(int(tile.real))
-            if i + tile.imag * 1j in loop
+            if i + tile.imag * 1j in vert
         ]
     )
-    left_edges = len(re.findall(r"(\||L-*7|F-*J)", left))
-    right = ("").join(
-        [
-            grid.get(i + tile.imag * 1j)
-            for i in range(int(tile.real) + 1, maxh + 1)
-            if i + tile.imag * 1j in loop
-        ]
-    )
-    right_edges = len(re.findall(r"(\||L-*7|F-*J)", right))
-    return left_edges > 0 and right_edges > 0 and right_edges % 2 == 1
+    left_edges = len(re.findall(r"(\||L7|FJ)", left))
+    return left_edges % 2 == 1
 
 
 def puzzle2(input_data):
     grid, start = parse(input_data)
     loop = browse(grid, start)
-    inside = [k for k in grid.keys() if k not in loop and is_inside(k, grid, loop)]
+    vert = [l for l in loop if grid.get(l) != "-"]
+    inside = [k for k in grid.keys() if k not in loop and is_inside(k, grid, vert)]
     return len(inside)
 
 
