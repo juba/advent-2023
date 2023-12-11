@@ -1,3 +1,5 @@
+import re
+
 from advent_2023 import Day
 
 NEXT = {
@@ -63,73 +65,44 @@ def puzzle1(input_data):
     return dist
 
 
-def blocked(tile, loop, grid):
-    criterion_vertical = (
-        lambda x: "-" in x or ("L" in x and "7" in x) or ("F" in x and "J" in x)
-    )
-    loop_up = [grid.get(l) for l in loop if l.real == tile.real and l.imag < tile.imag]
-    if not criterion_vertical(loop_up):
-        return False
-    loop_down = [grid.get(l) for l in loop if l.real == tile.real and l.imag > tile.imag]
-    if not criterion_vertical(loop_down):
-        return False
-    criterion_horizontal = (
-        lambda x: "|" in x or ("L" in x and "7" in x) or ("F" in x and "J" in x)
-    )
-    loop_left = [grid.get(l) for l in loop if l.imag == tile.imag and l.real < tile.real]
-    if not criterion_horizontal(loop_left):
-        return False
-    loop_right = [grid.get(l) for l in loop if l.imag == tile.imag and l.real > tile.real]
-    if not criterion_horizontal(loop_right):
-        return False
-    return True
-
-
-def propagate_outside(inside, outside):
-    changed = True
-    while changed:
-        changed = False
-        for tile in inside:
-            neighbors = [
-                tile - 1 - 1j,
-                tile - 1j,
-                tile + 1 - 1j,
-                tile - 1,
-                tile + 1,
-                tile - 1 + 1j,
-                tile + 1j,
-                tile + 1 + 1j,
-            ]
-            if any(neigh in outside for neigh in neighbors):
-                outside.append(tile)
-                inside.remove(tile)
-                changed = True
-    return inside, outside
-
-
-def plot(input_data, loop, inside, outside):
+def plot(input_data, loop, inside):
     lines = input_data.splitlines()
     for i, line in enumerate(lines):
         for j, char in enumerate(line):
-            if j + i * 1j in outside:
-                print("O", end="")
-            elif j + i * 1j in inside:
-                print(" ", end="")
+            if j + i * 1j in inside:
+                print(".", end="")
             elif j + i * 1j in loop:
                 print(char, end="")
             else:
-                print("!", end="")
+                print("O", end="")
         print()
+
+
+def is_inside(tile, grid, loop):
+    maxh = max([int(l.real) for l in loop])
+    left = ("").join(
+        [
+            grid.get(i + tile.imag * 1j)
+            for i in range(int(tile.real))
+            if i + tile.imag * 1j in loop
+        ]
+    )
+    left_edges = len(re.findall(r"(\||L-*7|F-*J)", left))
+    right = ("").join(
+        [
+            grid.get(i + tile.imag * 1j)
+            for i in range(int(tile.real) + 1, maxh + 1)
+            if i + tile.imag * 1j in loop
+        ]
+    )
+    right_edges = len(re.findall(r"(\||L-*7|F-*J)", right))
+    return left_edges > 0 and right_edges > 0 and right_edges % 2 == 1
 
 
 def puzzle2(input_data):
     grid, start = parse(input_data)
     loop = browse(grid, start)
-    tiles = {k: blocked(k, loop, grid) for k, v in grid.items() if k not in loop}
-    inside = [k for k, v in tiles.items() if v]
-    outside = [k for k, v in tiles.items() if not v]
-    inside, outside = propagate_outside(inside, outside)
-    plot(input_data, loop, inside, outside)
+    inside = [k for k in grid.keys() if k not in loop and is_inside(k, grid, loop)]
     return len(inside)
 
 
@@ -137,7 +110,7 @@ if __name__ == "__main__":
     day = Day(
         10,
         test_results=[8, 8],
-        input_results=[6831],
+        input_results=[6831, 305],
         test_data_indices=[8, 8],
     )
     day.validate(puzzle1, puzzle2, test_only=False)
