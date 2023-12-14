@@ -69,21 +69,16 @@ def weight(lines):
 
 def puzzle2(input_data):
     lines = input_data.splitlines()
-    i = 0
-    results = [lines]
-    while True:
-        i += 1
+    results = []
+    n_cycles = 1000000000
+    for n in range(n_cycles):
         lines = cycle(lines)
         if lines in results:
-            cycle_length = i - results.index(lines)
-            offset = results.index(lines)
-            break
+            idx = results.index(lines)
+            cycle_length = n - idx
+            remain = (n_cycles - idx - 1) % cycle_length
+            return weight(results[idx + remain])
         results.append(lines)
-    lines = input_data.splitlines()
-    n_cycles = offset + (1000000000 - offset) % cycle_length
-    for _ in range(n_cycles):
-        lines = cycle(lines)
-    return weight(lines)
 
 
 if __name__ == "__main__":
