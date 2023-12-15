@@ -1,6 +1,6 @@
 import functools
 import re
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 
 from advent_2023 import Day
 
@@ -20,9 +20,7 @@ def puzzle2(input_data):
     steps = input_data.split(",")
     steps = [re.split(r"([=-])", step) for step in steps]
     hm = hashmap({step[0] for step in steps})
-    boxes = {}
-    for box_id in range(256):
-        boxes[box_id] = OrderedDict()
+    boxes = defaultdict(OrderedDict)
     for label, op, focal in steps:
         box = boxes[hm.get(label)]
         if op == "-":
