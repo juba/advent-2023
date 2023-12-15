@@ -1,5 +1,7 @@
 import json
 import logging
+import time
+from datetime import timedelta
 from pathlib import Path
 
 import requests
@@ -21,7 +23,7 @@ class Day:
         test_results,
         input_results=None,
         get_test2_data=True,
-        test_data_indices=[0, 0],
+        test_data_indices=(0, 0),
     ):
         self.test_results = test_results
         self.input_results = input_results
@@ -101,9 +103,14 @@ class Day:
         with open(self._test2_file) as f:
             return f.read()
 
-    def validate_puzzle(self, i, fn, *, test_only=False):
+    def validate_puzzle(self, i, fn, *, test_only=False, test_timing=False):
         logging.info(f"\n🌞 Results for puzzle {i + 1} 🌞")
+        start_time = time.monotonic()
         res_test = fn(self.test_data[i])
+        end_time = time.monotonic()
+        execution_time = timedelta(seconds=end_time - start_time)
+        if test_timing:
+            logging.info(f"⏲  Execution time on test data: {execution_time}")
         logging.info(f"🧪 Result on test data: {res_test}")
         if res_test == self.test_results[i]:
             logging.info("✅ Test data result is ok")
@@ -111,7 +118,11 @@ class Day:
             logging.error("⛔ Test data result is wrong")
         if test_only:
             return
+        start_time = time.monotonic()
         res_input = fn(self.input_data)
+        end_time = time.monotonic()
+        execution_time = timedelta(seconds=end_time - start_time)
+        logging.info(f"⏲  Execution time on input data: {execution_time}")
         logging.info(f"🚀 Result on input data: {res_input}")
         if self.input_results is not None and len(self.input_results) > i:
             if res_input == self.input_results[i]:
@@ -119,7 +130,7 @@ class Day:
             else:
                 logging.error("⛔ Input data result is wrong")
 
-    def validate(self, fn1, fn2=None, *, test_only=False):
-        self.validate_puzzle(0, fn1, test_only=test_only)
+    def validate(self, fn1, fn2=None, *, test_only=False, test_timing=False):
+        self.validate_puzzle(0, fn1, test_only=test_only, test_timing=test_timing)
         if fn2 is not None:
-            self.validate_puzzle(1, fn2, test_only=test_only)
+            self.validate_puzzle(1, fn2, test_only=test_only, test_timing=test_timing)
