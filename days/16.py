@@ -24,7 +24,7 @@ def parse(lines):
 def get_energized(grid, start):
     beams = [start]
     energized, cache = set(), set()
-    while len(beams) > 0:
+    while beams:
         for b, _ in enumerate(beams):
             pos = beams[b][0] + beams[b][1]
             tile = grid.get(pos, None)
@@ -63,7 +63,7 @@ if __name__ == "__main__":
     day = Day(
         16,
         test_results=[46, 51],
-        input_results=[7939],
+        input_results=[7939, 8318],
         test_data_indices=[0, 0],
     )
     day.validate(puzzle1, puzzle2, test_only=False)
