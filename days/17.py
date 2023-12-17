@@ -59,7 +59,7 @@ def find_cost(grid, goal, start, new_dirs_fn):
     cost = {start: 0}
 
     while frontier:
-        ccost, _, current = heappop(frontier)
+        _, _, current = heappop(frontier)
         new_dirs = new_dirs_fn(current)
         new_positions = next_positions(current, grid, new_dirs)
         if current.pos == goal:
@@ -89,7 +89,7 @@ if __name__ == "__main__":
     day = Day(
         17,
         test_results=[102, 71],
-        input_results=[1263],  # < 1413
+        input_results=[1263, 1411],
         test_data_indices=[0, 3],
     )
     day.validate(puzzle1, puzzle2, test_only=False)
