@@ -105,8 +105,9 @@ ignore = [
   "S105", "S106", "S107",
   # Ignore complexity
   "C901", "PLR0911", "PLR0912", "PLR0913", "PLR0915",
-  "E731", # ignore warnings about lambda
-  "B905", # ignore strict in zip
+  "E731",   # ignore warnings about lambda
+  "B905",   # ignore strict in zip
+  "PLR2004" # magic numbers
 ]
 unfixable = [
   # Don't touch unused imports
