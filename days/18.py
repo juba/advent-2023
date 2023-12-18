@@ -38,7 +38,7 @@ if __name__ == "__main__":
     day = Day(
         18,
         test_results=[62, 952408144115],
-        input_results=[40745, 90111113594927],  # > 17661
+        input_results=[40745, 90111113594927],
         test_data_indices=[0, 0],
     )
     day.validate(puzzle1, puzzle2, test_only=False)
