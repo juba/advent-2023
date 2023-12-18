@@ -3,7 +3,8 @@ from advent_2023 import Day
 DIRECTIONS1 = {"R": 1, "L": -1, "D": 1j, "U": -1j}
 
 
-def compute_area(digs, get_direction_fn, get_length_fn):
+def compute_area(input_data, get_direction_fn, get_length_fn):
+    digs = [line.split() for line in input_data.splitlines()]
     current = 0j
     points = [current]
     border = 0
@@ -19,20 +20,18 @@ def compute_area(digs, get_direction_fn, get_length_fn):
 
 
 def puzzle1(input_data):
-    digs = [line.split() for line in input_data.splitlines()]
     get_direction = lambda dig: DIRECTIONS1[dig[0]]
     get_length = lambda dig: int(dig[1])
-    return compute_area(digs, get_direction, get_length)
+    return compute_area(input_data, get_direction, get_length)
 
 
 DIRECTIONS2 = {"0": 1, "2": -1, "1": 1j, "3": -1j}
 
 
 def puzzle2(input_data):
-    digs = [line.split() for line in input_data.splitlines()]
     get_direction = lambda dig: DIRECTIONS2[dig[2][7]]
     get_length = lambda dig: int(dig[2][2:7], 16)
-    return compute_area(digs, get_direction, get_length)
+    return compute_area(input_data, get_direction, get_length)
 
 
 if __name__ == "__main__":
