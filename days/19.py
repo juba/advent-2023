@@ -106,7 +106,7 @@ if __name__ == "__main__":
     day = Day(
         19,
         test_results=[19114, 167409079868000],
-        input_results=[386787],
+        input_results=[386787, 131029523269531],
         test_data_indices=[0, 0],
     )
     day.validate(puzzle1, puzzle2, test_only=False)
